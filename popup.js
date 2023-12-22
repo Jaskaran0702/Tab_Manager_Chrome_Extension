@@ -1,35 +1,36 @@
-// co/nsole.log(chrome.tabs);
-window.addEventListener("DOMContentLoaded", function(){
-    // console.log("DOM fully loaded and parsed");
-    // const tabs = document.querySelector("#ext_tabs");
 
+window.addEventListener("DOMContentLoaded", function () {
     let allTabs = [];
+
     chrome.runtime.sendMessage({ type: "getTabs" }, response => {
-        // console.log(response);
         allTabs = response;
-        response.forEach((tab, index) => {
-            const tabs = document.querySelector("#ext_tabs");
-            console.log(tabs);
+
+        const tabsList = document.querySelector("#ext_tabs");
+
+        response.forEach(tab => {
             const tabElement = document.createElement("li");
-            const p = this.document.createElement("p");
-            p.innerText = tab.title;
-            const button = this.document.createElement("button");
-            if(tab.active){
+            const titleElement = document.createElement("span");
+            const button = document.createElement("button");
+
+            titleElement.innerText = tab.title;
+
+            if (tab.active) {
                 tabElement.classList.add("active");
             }
-            button.addEventListener("click", ()=>{
+
+            button.addEventListener("click", () => {
                 chrome.tabs.remove(tab.id);
                 tabElement.remove();
             });
-            p.addEventListener("click", () => {
-                chrome.tabs.update(tab.id, { active: true});
-                // window.close();
+
+            tabElement.addEventListener("click", () => {
+                chrome.tabs.update(tab.id, { active: true });
             });
+
             button.innerText = "Close Tab";
-            tabElement.appendChild(p);
+            tabElement.appendChild(titleElement);
             tabElement.appendChild(button);
-            tabs.appendChild(tabElement);
+            tabsList.appendChild(tabElement);
         });
     });
-
 });
